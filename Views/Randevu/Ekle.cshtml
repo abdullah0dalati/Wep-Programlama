@@ -1,0 +1,115 @@
+﻿@model Randevu
+<h2>Randevu Ekleme Sayfasi</h2>
+
+
+
+<form method="post">
+
+
+	<div class="border p-3 mt-5">
+
+		<div class="row pb-3  form-group">
+			<h2 class="text-primary "><strong>Randevu </strong> </h2>
+			</hr>
+		</div>
+		@* HASTALARI CEKİYORUZ *@
+		<div class="form-group">
+			<label asp-for="HastaId" class="p-0">Hastalar</label>
+			<select asp-for="HastaId" asp-items="ViewBag.HastaList" name="HastaId" class="form-select">
+			</select>
+		</div>
+
+		@*  Doktorlari CEKİYORUZ  *@
+		<div class="form-group">
+
+			<label asp-for="DoktorId" class="p-0">Doktorlar</label>
+			<select id="DoctorList" asp-for="DoktorId" asp-items="ViewBag.DoktorList" name="DoktorId" class="form-select">
+				<option>Doktor Seçiniz</option>
+			</select>
+
+		</div>
+
+
+		@*  Doktorlar SAAT CEKİYOZ
+		  *@
+
+		 <div class="form-group">
+			<label asp-for="RandevuSaati" class="p-0">RandevuSaati</label>
+			<select id="StateList"  asp-for="RandevuSaati"  class="form-select">
+				<option value="-1">Calisma Saati</option>
+			</select>
+
+		</div> 
+
+		
+		</br>
+		
+
+		<div class="mb-3 form-group">
+			<label asp-for="Tarih">Randevu Tarihi</label>
+			<input id="Tarih" asp-for="Tarih" class="form-control" type="date" min="yyyy-MM-dd" value="yyyy-MM-dd" max="yyyy-MM-dd">
+			<span asp-validation-for="Tarih" class="text-danger"></span>
+		</div>
+
+	
+
+		@*  Polikinlikleri CEKİYORUZ  *@
+		<div class="form-group">
+			<label asp-for="PolikinlikId" class="p-0">Polikinlik</label>
+			<select asp-for="PolikinlikId" asp-items="ViewBag.PolikinlikList"   class="form-select">
+			</select>
+		</div>
+
+		<div class="mb-3  form-group"
+		<label asp-for="Aciklama"> Açıklama</label>
+		<input asp-for="Aciklama"  class="form-control">
+		<span asp-validation-for="Aciklama" class="text-danger"></span>
+		</div>
+		
+
+		<button type="submit" class="btn btn-outline-primary" style="width:250px">Randevu Al</button>
+
+		<a asp-controller="Randevu" asp-action="Index" class="btn btn-outline-primary style="width:250px">
+			Randuvular Listesi
+		</a>
+
+	</div>
+
+</form>
+@section Scripts
+{
+		
+	<script type="text/javascript">
+		$(document).ready(function () {
+
+			$('#DoctorList').change(function () {
+				var doktorId = $(this).val();
+				$.ajax({
+					url: '/Randevu/LoadState',
+					type: 'GET',
+					data: { doktorId: doktorId }, // Değişken adını düzelt
+					success: function (result) {
+						var saatListesi = $('#StateList'); // Calisma Saati dropdown listesi
+
+						saatListesi.empty(); // Önceki içeriği temizle
+						saatListesi.append($('<option></option>').val("-1").text("Çalışma Saati Seçiniz"));
+
+						$.each(result, function (index, item) {
+							saatListesi.append($('<option></option>').val(item.saat).text(item.saat));
+						});
+					},
+					error: function () {
+						console.error('İstek başarısız oldu.');
+					}
+				});
+			});
+
+
+		});
+	</script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		var today = new Date().toISOString().split('T')[0];
+		document.getElementById("Tarih").min = today;
+	</script>
+}
